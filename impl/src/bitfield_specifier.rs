@@ -117,7 +117,7 @@ fn generate_enum(input: syn::ItemEnum) -> syn::Result<TokenStream2> {
     let check_discriminants = variants.iter().map(|ident| {
         let span = ident.span();
         quote_spanned!(span =>
-            impl ::modular_bitfield::private::checks::CheckDiscriminantInRange<[(); Self::#ident as usize]> for #enum_ident {
+            impl ::modular_bitfield_msb::private::checks::CheckDiscriminantInRange<[(); Self::#ident as usize]> for #enum_ident {
                 type CheckType = [(); ((Self::#ident as usize) < (0x01_usize << #bits)) as usize ];
             }
         )
@@ -125,7 +125,7 @@ fn generate_enum(input: syn::ItemEnum) -> syn::Result<TokenStream2> {
     let from_bytes_arms = variants.iter().map(|ident| {
         let span = ident.span();
         quote_spanned!(span=>
-            __bitfield_binding if __bitfield_binding == Self::#ident as <Self as ::modular_bitfield::Specifier>::Bytes => {
+            __bitfield_binding if __bitfield_binding == Self::#ident as <Self as ::modular_bitfield_msb::Specifier>::Bytes => {
                 ::core::result::Result::Ok(Self::#ident)
             }
         )
@@ -134,23 +134,24 @@ fn generate_enum(input: syn::ItemEnum) -> syn::Result<TokenStream2> {
     Ok(quote_spanned!(span=>
         #( #check_discriminants )*
 
-        impl ::modular_bitfield::Specifier for #enum_ident {
+        impl ::modular_bitfield_msb::Specifier for #enum_ident {
             const BITS: usize = #bits;
-            type Bytes = <[(); #bits] as ::modular_bitfield::private::SpecifierBytes>::Bytes;
+            const STRUCT: bool = false;
+            type Bytes = <[(); #bits] as ::modular_bitfield_msb::private::SpecifierBytes>::Bytes;
             type InOut = Self;
 
             #[inline]
-            fn into_bytes(input: Self::InOut) -> ::core::result::Result<Self::Bytes, ::modular_bitfield::error::OutOfBounds> {
+            fn into_bytes(input: Self::InOut) -> ::core::result::Result<Self::Bytes, ::modular_bitfield_msb::error::OutOfBounds> {
                 ::core::result::Result::Ok(input as Self::Bytes)
             }
 
             #[inline]
-            fn from_bytes(bytes: Self::Bytes) -> ::core::result::Result<Self::InOut, ::modular_bitfield::error::InvalidBitPattern<Self::Bytes>> {
+            fn from_bytes(bytes: Self::Bytes) -> ::core::result::Result<Self::InOut, ::modular_bitfield_msb::error::InvalidBitPattern<Self::Bytes>> {
                 match bytes {
                     #( #from_bytes_arms ),*
                     invalid_bytes => {
                         ::core::result::Result::Err(
-                            <::modular_bitfield::error::InvalidBitPattern<Self::Bytes>>::new(invalid_bytes)
+                            <::modular_bitfield_msb::error::InvalidBitPattern<Self::Bytes>>::new(invalid_bytes)
                         )
                     }
                 }

@@ -44,8 +44,8 @@
 //     bitfield.set_small_prime(SmallPrime::Seven);
 //     let p = bitfield.small_prime_or_err().unwrap_or(SmallPrime::Two);
 
-use modular_bitfield::error::InvalidBitPattern;
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::error::InvalidBitPattern;
+use modular_bitfield_msb::prelude::*;
 
 #[bitfield]
 pub struct RedirectionTableEntry {

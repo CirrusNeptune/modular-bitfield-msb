@@ -4,7 +4,7 @@ error: encountered conflicting `#[repr(u32)]` and `filled = false` parameters
 3 | #[bitfield(filled = false)]
   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
   |
-  = note: this error originates in an attribute macro (in Nightly builds, run with -Z macro-backtrace for more info)
+  = note: this error originates in the attribute macro `bitfield` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error: conflicting `#[repr(u32)]` here
  --> $DIR/invalid-repr-unfilled.rs:4:8
@@ -16,4 +16,4 @@ error: conflicting `filled = false` here
  --> $DIR/invalid-repr-unfilled.rs:3:12
   |
 3 | #[bitfield(filled = false)]
-  |            ^^^^^^
+  |            ^^^^^^^^^^^^^^

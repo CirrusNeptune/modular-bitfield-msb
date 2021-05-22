@@ -13,7 +13,7 @@ use proc_macro::TokenStream;
 
 /// Generates the `B1`, `B2`, ..., `B128` bitfield specifiers.
 ///
-/// Only of use witihn the `modular_bitfield` crate itself.
+/// Only of use witihn the `modular_bitfield_msb` crate itself.
 #[proc_macro]
 pub fn define_specifiers(input: TokenStream) -> TokenStream {
     define_specifiers::generate(input.into()).into()
@@ -70,7 +70,7 @@ pub fn define_specifiers(input: TokenStream) -> TokenStream {
 /// ### Example
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// #[bitfield(bytes = 2)]
 /// pub struct SingedInt {
 ///     sign: bool, //  1 bit
@@ -89,7 +89,7 @@ pub fn define_specifiers(input: TokenStream) -> TokenStream {
 /// ### Example
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// #[bitfield(filled = false)]
 /// pub struct Package {
 ///     is_received: bool, // 1 bit
@@ -107,7 +107,7 @@ pub fn define_specifiers(input: TokenStream) -> TokenStream {
 /// ### Example 1
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// #[bitfield(bits = 16)]
 /// pub struct Package {
 ///     is_received: bool, // 1 bit
@@ -122,7 +122,7 @@ pub fn define_specifiers(input: TokenStream) -> TokenStream {
 /// `#[derive(BitfieldSpecifier)] and `filled = false` as shown in the below example.
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// #[bitfield(bits = 5)]
 /// #[derive(BitfieldSpecifier)]
 /// pub struct Package {
@@ -140,7 +140,7 @@ pub fn define_specifiers(input: TokenStream) -> TokenStream {
 /// ### Example
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// # #[bitfield(filled = false)]
 /// # #[derive(BitfieldSpecifier)]
 /// # pub struct Header {
@@ -166,7 +166,7 @@ pub fn define_specifiers(input: TokenStream) -> TokenStream {
 /// ### Example
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// #[bitfield]
 /// pub struct Sparse {
 ///     #[skip(getters)]
@@ -188,7 +188,7 @@ pub fn define_specifiers(input: TokenStream) -> TokenStream {
 /// some undefined bits in your bitfield you can use double wildcards as their names:
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// #[bitfield]
 /// pub struct Sparse {
 ///     #[skip] __: B10,
@@ -213,7 +213,7 @@ pub fn define_specifiers(input: TokenStream) -> TokenStream {
 /// ### Example
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// #[bitfield(filled = false)]
 /// #[derive(BitfieldSpecifier)]
 /// pub struct Header {
@@ -226,7 +226,7 @@ pub fn define_specifiers(input: TokenStream) -> TokenStream {
 /// Now the above `Header` bitfield type can be used in yet another `#[bitfield]` annotated type:
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// # #[bitfield(filled = false)]
 /// # #[derive(BitfieldSpecifier)]
 /// # pub struct Header {
@@ -251,7 +251,7 @@ pub fn define_specifiers(input: TokenStream) -> TokenStream {
 /// ### Example
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// #[bitfield]
 /// #[derive(Debug)]
 /// pub struct Package {
@@ -284,7 +284,7 @@ pub fn define_specifiers(input: TokenStream) -> TokenStream {
 /// ### Example
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// #[bitfield]
 /// #[repr(u16)]
 /// pub struct SignedU16 {
@@ -321,7 +321,7 @@ pub fn bitfield(args: TokenStream, input: TokenStream) -> TokenStream {
 /// as well as an invalid day so that we have a power-of-two number of variants.
 ///
 /// ```
-/// use modular_bitfield::prelude::*;
+/// use modular_bitfield_msb::prelude::*;
 ///
 /// #[derive(BitfieldSpecifier)]
 /// pub enum Weekday {
@@ -334,7 +334,7 @@ pub fn bitfield(args: TokenStream, input: TokenStream) -> TokenStream {
 /// If we want to get rid of the `None` variant we need to add `#[bits = 3]`:
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// #
 /// #[derive(BitfieldSpecifier)]
 /// #[bits = 3]
@@ -349,7 +349,7 @@ pub fn bitfield(args: TokenStream, input: TokenStream) -> TokenStream {
 /// In our case this is useful since our week starts at sunday:
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// #
 /// #[derive(BitfieldSpecifier)]
 /// #[bits = 3]
@@ -370,7 +370,7 @@ pub fn bitfield(args: TokenStream, input: TokenStream) -> TokenStream {
 /// we can now use it in a `#[bitfield]` annotated struct as follows:
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// #
 /// # #[derive(BitfieldSpecifier)]
 /// # #[bits = 3]
@@ -402,7 +402,7 @@ pub fn bitfield(args: TokenStream, input: TokenStream) -> TokenStream {
 /// the following ways:
 ///
 /// ```
-/// # use modular_bitfield::prelude::*;
+/// # use modular_bitfield_msb::prelude::*;
 /// #
 /// # #[derive(BitfieldSpecifier, Debug, PartialEq)]
 /// # #[bits = 3]

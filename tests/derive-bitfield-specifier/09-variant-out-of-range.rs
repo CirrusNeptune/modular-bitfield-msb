@@ -1,7 +1,7 @@
 // Bitfield enums with any discriminant (implicit or explicit) outside of the
 // range 0..2^BITS should fail to compile.
 
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 const F: isize = 1;
 

@@ -1,4 +1,4 @@
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 // The bitfield has 24 bits and therefore is filled.
 #[bitfield(filled = true)]

@@ -1,4 +1,4 @@
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 #[bitfield]
 #[repr(C, u32)] // The macro simply ignores `repr(C)`

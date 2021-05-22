@@ -1,5 +1,5 @@
 mod inner {
-    use modular_bitfield::prelude::*;
+    use modular_bitfield_msb::prelude::*;
     #[bitfield]
     #[derive(Copy, Clone, Eq, PartialEq, Default)]
     pub struct ColorEntry {

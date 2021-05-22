@@ -1,4 +1,4 @@
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 // Is only 9 bits, so will be 2 bytes in size.
 #[bitfield(bytes = 2, filled = false)]

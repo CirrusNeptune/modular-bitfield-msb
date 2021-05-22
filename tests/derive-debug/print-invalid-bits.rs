@@ -1,4 +1,4 @@
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 #[derive(BitfieldSpecifier, Debug)]
 #[bits = 2]
@@ -17,7 +17,7 @@ pub struct DataPackage {
 }
 
 fn main() {
-    let package = DataPackage::from_bytes([0b01011011]);
+    let package = DataPackage::from_bytes([0b11011010]);
     assert_eq!(
         format!("{:?}", package),
         "DataPackage { status: InvalidBitPattern { invalid_bytes: 3 }, contents: 6, is_alive: true, is_received: false }",

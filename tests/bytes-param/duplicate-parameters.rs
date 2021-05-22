@@ -1,4 +1,4 @@
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 // There are 2 duplicate bytes parameters.
 #[bitfield(bytes = 4, bytes = 4)]

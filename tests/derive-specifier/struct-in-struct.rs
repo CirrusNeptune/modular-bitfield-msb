@@ -1,4 +1,4 @@
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 #[bitfield(filled = false)]
 #[derive(BitfieldSpecifier, Debug, PartialEq, Eq, Copy, Clone)]

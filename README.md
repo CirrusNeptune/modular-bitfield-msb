@@ -1,20 +1,27 @@
-# Modular Bitfields for Rust
+# Modular Bitfields for Rust (MSB-first)
 
 |   Continuous Integration  |  Documentation    |       Crates.io      |       LoC        |
 |:-------------------------:|:-----------------:|:--------------------:|:----------------:|
 | [![GHActions][C1]][C2]    | [![docs][A1]][A2] | [![crates][B1]][B2]  | [![loc][D1]][D2] |
 
-[A1]: https://docs.rs/modular-bitfield/badge.svg
-[A2]: https://docs.rs/modular-bitfield
-[B1]: https://img.shields.io/crates/v/modular_bitfield.svg
-[B2]: https://crates.io/crates/modular_bitfield
-[C1]: https://github.com/Robbepop/modular-bitfield/workflows/Rust%20-%20Continuous%20Integration/badge.svg?branch=master&event=push
-[C2]: https://github.com/Robbepop/modular-bitfield/actions?query=workflow%3A%22Rust+-+Continuous+Integration%22+branch%3Amaster+event%3Apush
-[D1]: https://tokei.rs/b1/github/Robbepop/modular-bitfield?category=code
+[A1]: https://docs.rs/modular-bitfield-msb/badge.svg
+[A2]: https://docs.rs/modular-bitfield-msb
+[B1]: https://img.shields.io/crates/v/modular_bitfield_msb.svg
+[B2]: https://crates.io/crates/modular_bitfield_msb
+[C1]: https://github.com/CirrusNeptune/modular-bitfield-msb/workflows/Rust%20-%20Continuous%20Integration/badge.svg?branch=master&event=push
+[C2]: https://github.com/CirrusNeptune/modular-bitfield-msb/actions?query=workflow%3A%22Rust+-+Continuous+Integration%22+branch%3Amaster+event%3Apush
+[D1]: https://tokei.rs/b1/github/CirrusNeptune/modular-bitfield-msb?category=code
 [D2]: https://github.com/Aaronepower/tokei#badges
 
 - `no_std`: Supports embedded development without `std` library.
 - This crate uses and generates 100% safe Rust code.
+
+## MSB-first Version
+
+This crate is a fork of [modular-bitfield](https://github.com/robbepop/modular-bitfield).
+Usage is identical with two key differences:
+- Fields are laid out in MSB-to-LSB order.
+- Fields that span multiple-bytes are stored in big endian.
 
 ## Description
 
@@ -199,7 +206,7 @@ to have a number of variants that is a power of two. We can ship around this by 
 the invariant of it requiring 2 bits:
 
 ```rust
-# use modular_bitfield::prelude::*;
+# use modular_bitfield_msb::prelude::*;
 
 #[derive(BitfieldSpecifier)]
 #[bits = 2]
@@ -238,7 +245,7 @@ We can conclude that the macro-generated code is as fast as hand-written code wo
 
 ### Summary
 
-The `modular_bitfield` crate generates bitfields that are ...
+The `modular_bitfield_msb` crate generates bitfields that are ...
 
 - just as efficient as the handwritten alternatives.
 - equally efficient or more efficient than the alternative [bitfield] crate.

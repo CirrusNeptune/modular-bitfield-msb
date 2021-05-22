@@ -2,4 +2,4 @@ error: encountered malformatted integer value for `bytes` parameter: invalid dig
  --> $DIR/invalid-int-value.rs:4:20
   |
 4 | #[bitfield(bytes = -1)]
-  |                    ^
+  |                    ^^

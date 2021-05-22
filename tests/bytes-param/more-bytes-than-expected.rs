@@ -1,4 +1,4 @@
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 // Requires 6 bytes in total instead of 4.
 #[bitfield(bytes = 4)]

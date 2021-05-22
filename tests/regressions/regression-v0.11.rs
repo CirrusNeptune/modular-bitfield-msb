@@ -1,4 +1,4 @@
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 #[bitfield(bits = 8)]
 #[derive(Copy, Clone)]
@@ -20,5 +20,5 @@ fn main() {
     flags.set_b(true);
     assert!(flags.a());
     assert!(flags.b());
-    assert_eq!(flags.into_bytes(), [0b0000_0101]);
+    assert_eq!(flags.into_bytes(), [0b1010_0000]);
 }

@@ -19,7 +19,7 @@
 //! The `B1`, `B2`, ... `B128` prelude types can be used as primitives to declare the number of bits per field.
 //!
 //! ```
-//! # use modular_bitfield::prelude::*;
+//! # use modular_bitfield_msb::prelude::*;
 //! #
 //! #[bitfield]
 //! pub struct PackedData {
@@ -36,7 +36,7 @@
 //! #### Example: Constructors
 //!
 //! ```
-//! # use modular_bitfield::prelude::*;
+//! # use modular_bitfield_msb::prelude::*;
 //! #
 //! # #[bitfield]
 //! # pub struct PackedData {
@@ -65,7 +65,7 @@
 //! We can use this knowledge to encode our `is_alive` as `bool` type instead of `B1`:
 //!
 //! ```
-//! # use modular_bitfield::prelude::*;
+//! # use modular_bitfield_msb::prelude::*;
 //! #
 //! #[bitfield]
 //! pub struct PackedData {
@@ -88,7 +88,7 @@
 //! them also usable as a field within a bitfield type:
 //!
 //! ```
-//! # use modular_bitfield::prelude::*;
+//! # use modular_bitfield_msb::prelude::*;
 //! #
 //! #[derive(BitfieldSpecifier)]
 //! pub enum Status {
@@ -110,7 +110,7 @@
 //! `#[bits = 2]` to its field:
 //!
 //! ```
-//! # use modular_bitfield::prelude::*;
+//! # use modular_bitfield_msb::prelude::*;
 //! #
 //! # #[derive(BitfieldSpecifier)]
 //! # pub enum Status {
@@ -130,7 +130,7 @@
 //! Setting and getting our new `status` field is naturally as follows:
 //!
 //! ```
-//! # use modular_bitfield::prelude::*;
+//! # use modular_bitfield_msb::prelude::*;
 //! #
 //! # #[derive(BitfieldSpecifier)]
 //! # #[derive(Debug, PartialEq, Eq)]
@@ -161,7 +161,7 @@
 //! can be used on a bitfield of a `#[bitfield]` annotated struct.
 //!
 //! ```
-//! # use modular_bitfield::prelude::*;
+//! # use modular_bitfield_msb::prelude::*;
 //! #
 //! #[bitfield]
 //! pub struct SomeBitsUndefined {
@@ -179,7 +179,7 @@
 //! it is possible to completely avoid having to specify a name:
 //!
 //! ```
-//! # use modular_bitfield::prelude::*;
+//! # use modular_bitfield_msb::prelude::*;
 //! #
 //! #[bitfield]
 //! pub struct SomeBitsUndefined {
@@ -199,7 +199,7 @@
 //! this for your respective bitfield:
 //!
 //! ```
-//! # use modular_bitfield::prelude::*;
+//! # use modular_bitfield_msb::prelude::*;
 //! #
 //! #[bitfield(filled = false)]
 //! pub struct SomeBitsUndefined {
@@ -221,7 +221,7 @@
 //! annotated with `#[bitfield]`:
 //!
 //! ```
-//! # use modular_bitfield::prelude::*;
+//! # use modular_bitfield_msb::prelude::*;
 //! #
 //! # #[derive(BitfieldSpecifier)]
 //! # pub enum Status {
@@ -250,7 +250,7 @@
 //! can have additional compile-time guarantees about the bit widths of the resulting entities:
 //!
 //! ```
-//! # use modular_bitfield::prelude::*;
+//! # use modular_bitfield_msb::prelude::*;
 //! #
 //! #[derive(BitfieldSpecifier)]
 //! #[bits = 2]
@@ -287,7 +287,7 @@
 //! the invariant of it requiring 2 bits:
 //!
 //! ```
-//! # use modular_bitfield::prelude::*;
+//! # use modular_bitfield_msb::prelude::*;
 //!
 //! #[derive(BitfieldSpecifier)]
 //! #[bits = 2]
@@ -302,8 +302,8 @@
 //! construct bitfields that may contain invalid bit patterns:
 //!
 //! ```
-//! # use modular_bitfield::prelude::*;
-//! # use modular_bitfield::error::InvalidBitPattern;
+//! # use modular_bitfield_msb::prelude::*;
+//! # use modular_bitfield_msb::error::InvalidBitPattern;
 //! #
 //! # #[derive(BitfieldSpecifier)]
 //! # #[derive(Debug, PartialEq, Eq)]
@@ -328,8 +328,8 @@
 //! #     status: Status,
 //! # }
 //! #
-//! let mut data = PackedData::from_bytes([0b0000_0000, 0b1100_0000]);
-//! //           The 2 status field bits are invalid -----^^
+//! let mut data = PackedData::from_bytes([0b0000_0000, 0b0000_0011]);
+//! //           The 2 status field bits are invalid ------------^^
 //! //           as Red = 0x00, Green = 0x01 and Yellow = 0x10
 //! assert_eq!(data.status_or_err(), Err(InvalidBitPattern { invalid_bytes: 0b11 }));
 //! data.set_status(Status::Green);
@@ -341,7 +341,7 @@
 //! For the example `#[bitfield]` struct the following implementations are going to be generated:
 //!
 //! ```
-//! # use modular_bitfield::prelude::*;
+//! # use modular_bitfield_msb::prelude::*;
 //! #
 //! #[bitfield]
 //! pub struct Example {
@@ -387,7 +387,7 @@
 //! and field `d` spanning the next three bytes.
 //!
 //! ```rust
-//! use modular_bitfield::prelude::*;
+//! use modular_bitfield_msb::prelude::*;
 //!
 //! #[bitfield]
 //! pub struct MyFourBytes {
@@ -398,8 +398,8 @@
 //! }
 //! ```
 //! ```no_compile
-//!                                least significant bit of third byte
-//!                                  ┊           most significant
+//!                                most significant bit of third byte
+//!                                  ┊           least significant
 //!                                  ┊             ┊
 //!                                  ┊             ┊
 //! ║  first byte   ║  second byte  ║  third byte   ║  fourth byte  ║
@@ -409,7 +409,7 @@
 //! ║a║  b  ║   c   ║                       d                       ║
 //!                  ┊                                             ┊
 //!                  ┊                                             ┊
-//!                least significant bit of d         most significant
+//!                most significant bit of d         least significant
 //! ```
 
 #![no_std]
@@ -425,12 +425,12 @@ use self::error::{
     InvalidBitPattern,
     OutOfBounds,
 };
-pub use modular_bitfield_impl::{
+pub use modular_bitfield_msb_impl::{
     bitfield,
     BitfieldSpecifier,
 };
 
-/// The prelude: `use modular_bitfield::prelude::*;`
+/// The prelude: `use modular_bitfield_msb::prelude::*;`
 pub mod prelude {
     pub use super::{
         bitfield,
@@ -453,6 +453,7 @@ pub mod prelude {
 pub trait Specifier {
     /// The amount of bits used by the specifier.
     const BITS: usize;
+    const STRUCT: bool;
 
     /// The base type of the specifier.
     ///
@@ -492,5 +493,5 @@ pub trait Specifier {
 
 /// The default set of predefined specifiers.
 pub mod specifiers {
-    ::modular_bitfield_impl::define_specifiers!();
+    ::modular_bitfield_msb_impl::define_specifiers!();
 }

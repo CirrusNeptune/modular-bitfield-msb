@@ -3,7 +3,7 @@
 // For this we generate getters and setters in a way that refer to the corresponding
 // number of the field within the annotated tuple struct.
 
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 #[bitfield]
 struct MyTwoBytes(bool, B7, B8);

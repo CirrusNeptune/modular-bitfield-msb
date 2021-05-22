@@ -3,7 +3,7 @@
 // That means the accessors for B1 through B8 would use u8, B9 through B16 would
 // use u16 etc.
 
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 use std::mem::size_of_val;
 
 type A = B1;

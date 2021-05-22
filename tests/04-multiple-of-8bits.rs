@@ -43,7 +43,7 @@
 // what code you want to generate, writing the macro to generate it is generally
 // the easy part.
 
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 type A = B1;
 type B = B3;

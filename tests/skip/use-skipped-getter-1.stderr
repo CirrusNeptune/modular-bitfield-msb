@@ -3,7 +3,11 @@ error[E0599]: no method named `unused_1` found for struct `Sparse` in the curren
    |
 4  | / #[derive(Debug)]
 5  | | pub struct Sparse {
-   | |___- method `unused_1` not found for this
+6  | |     #[skip(getters)]
+7  | |     unused_1: B7,
+8  | |     a: bool,
+9  | | }
+   | |_- method `unused_1` not found for this
 ...
 14 |       assert_eq!(sparse.unused_1(), 0); // ERROR!
    |                         ^^^^^^^^ method not found in `Sparse`

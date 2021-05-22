@@ -60,25 +60,26 @@ impl BitfieldStruct {
         Some(quote_spanned!(span =>
             #[allow(clippy::identity_op)]
             const _: () = {
-                impl ::modular_bitfield::private::checks::CheckSpecifierHasAtMost128Bits for #ident {
+                impl ::modular_bitfield_msb::private::checks::CheckSpecifierHasAtMost128Bits for #ident {
                     type CheckType = [(); (#bits <= 128) as ::core::primitive::usize];
                 }
             };
 
             #[allow(clippy::identity_op)]
-            impl ::modular_bitfield::Specifier for #ident {
+            impl ::modular_bitfield_msb::Specifier for #ident {
                 const BITS: usize = #bits;
+                const STRUCT: bool = true;
 
                 #[allow(unused_braces)]
-                type Bytes = <[(); if { #bits } > 128 { 128 } else { #bits }] as ::modular_bitfield::private::SpecifierBytes>::Bytes;
+                type Bytes = <[(); if { #bits } > 128 { 128 } else { #bits }] as ::modular_bitfield_msb::private::SpecifierBytes>::Bytes;
                 type InOut = Self;
 
                 #[inline]
                 fn into_bytes(
                     value: Self::InOut,
-                ) -> ::core::result::Result<Self::Bytes, ::modular_bitfield::error::OutOfBounds> {
+                ) -> ::core::result::Result<Self::Bytes, ::modular_bitfield_msb::error::OutOfBounds> {
                     ::core::result::Result::Ok(
-                        <[(); #next_divisible_by_8] as ::modular_bitfield::private::ArrayBytesConversion>::array_into_bytes(
+                        <[(); #next_divisible_by_8] as ::modular_bitfield_msb::private::ArrayBytesConversion>::array_into_bytes(
                             value.bytes
                         )
                     )
@@ -87,17 +88,15 @@ impl BitfieldStruct {
                 #[inline]
                 fn from_bytes(
                     bytes: Self::Bytes,
-                ) -> ::core::result::Result<Self::InOut, ::modular_bitfield::error::InvalidBitPattern<Self::Bytes>>
+                ) -> ::core::result::Result<Self::InOut, ::modular_bitfield_msb::error::InvalidBitPattern<Self::Bytes>>
                 {
-                    let __bf_max_value: Self::Bytes = (0x01 as Self::Bytes)
-                        .checked_shl(Self::BITS as ::core::primitive::u32)
-                        .unwrap_or(<Self::Bytes>::MAX);
-                    if bytes > __bf_max_value {
-                        return ::core::result::Result::Err(::modular_bitfield::error::InvalidBitPattern::new(bytes))
+                    let __bf_reject_mask = ((0x01 << (#next_divisible_by_8 - Self::BITS)) - 1) as Self::Bytes;
+                    if bytes & __bf_reject_mask != 0 {
+                        return ::core::result::Result::Err(::modular_bitfield_msb::error::InvalidBitPattern::new(bytes))
                     }
                     let __bf_bytes = bytes.to_le_bytes();
                     ::core::result::Result::Ok(Self {
-                        bytes: <[(); #next_divisible_by_8] as ::modular_bitfield::private::ArrayBytesConversion>::bytes_into_array(bytes)
+                        bytes: <[(); #next_divisible_by_8] as ::modular_bitfield_msb::private::ArrayBytesConversion>::bytes_into_array(bytes)
                     })
                 }
             }
@@ -154,7 +153,7 @@ impl BitfieldStruct {
     /// For the following struct:
     ///
     /// ```
-    /// # use modular_bitfield::prelude::*;
+    /// # use modular_bitfield_msb::prelude::*;
     /// #[bitfield]
     /// pub struct Color {
     ///     r: B8,
@@ -168,14 +167,14 @@ impl BitfieldStruct {
     /// We generate the following tokens:
     ///
     /// ```
-    /// # use modular_bitfield::prelude::*;
+    /// # use modular_bitfield_msb::prelude::*;
     /// {
     ///     0usize +
-    ///     <B8 as ::modular_bitfield::Specifier>::BITS +
-    ///     <B8 as ::modular_bitfield::Specifier>::BITS +
-    ///     <B8 as ::modular_bitfield::Specifier>::BITS +
-    ///     <bool as ::modular_bitfield::Specifier>::BITS +
-    ///     <B7 as ::modular_bitfield::Specifier>::BITS
+    ///     <B8 as ::modular_bitfield_msb::Specifier>::BITS +
+    ///     <B8 as ::modular_bitfield_msb::Specifier>::BITS +
+    ///     <B8 as ::modular_bitfield_msb::Specifier>::BITS +
+    ///     <bool as ::modular_bitfield_msb::Specifier>::BITS +
+    ///     <B7 as ::modular_bitfield_msb::Specifier>::BITS
     /// }
     /// # ;
     /// ```
@@ -191,7 +190,7 @@ impl BitfieldStruct {
                 let span = field.span();
                 let ty = &field.ty;
                 quote_spanned!(span=>
-                    <#ty as ::modular_bitfield::Specifier>::BITS
+                    <#ty as ::modular_bitfield_msb::Specifier>::BITS
                 )
             })
             .fold(quote_spanned!(span=> 0usize), |lhs, rhs| {
@@ -242,7 +241,7 @@ impl BitfieldStruct {
         quote_spanned!(span=>
             #[allow(clippy::identity_op)]
             const _: () = {
-                impl ::modular_bitfield::private::checks::#check_ident for #ident {
+                impl ::modular_bitfield_msb::private::checks::#check_ident for #ident {
                     type CheckType = [(); (#required_bits #comparator #actual_bits) as usize];
                 }
             };
@@ -264,8 +263,8 @@ impl BitfieldStruct {
         quote_spanned!(span=>
             #[allow(clippy::identity_op)]
             const _: () = {
-                impl ::modular_bitfield::private::checks::#check_ident for #ident {
-                    type Size = ::modular_bitfield::private::checks::TotalSize<[(); #actual_bits % 8usize]>;
+                impl ::modular_bitfield_msb::private::checks::#check_ident for #ident {
+                    type Size = ::modular_bitfield_msb::private::checks::TotalSize<[(); #actual_bits % 8usize]>;
                 }
             };
         )
@@ -344,9 +343,9 @@ impl BitfieldStruct {
             let bytes = config.value;
             quote_spanned!(config.span=>
                 const _: () = {
-                    struct ExpectedBytes { __bf_unused: [::core::primitive::u8; #bytes] };
+                    struct ExpectedBytes { __bf_unused: [::core::primitive::u8; #bytes] }
 
-                    ::modular_bitfield::private::static_assertions::assert_eq_size!(
+                    ::modular_bitfield_msb::private::static_assertions::assert_eq_size!(
                         ExpectedBytes,
                         #ident
                     );
@@ -379,21 +378,21 @@ impl BitfieldStruct {
             quote_spanned!(span=>
                 impl ::core::convert::From<#prim> for #ident
                 where
-                    [(); #actual_bits]: ::modular_bitfield::private::#trait_check_ident,
+                    [(); #actual_bits]: ::modular_bitfield_msb::private::#trait_check_ident,
                 {
                     #[inline]
                     fn from(__bf_prim: #prim) -> Self {
-                        Self { bytes: <#prim>::to_le_bytes(__bf_prim) }
+                        Self { bytes: <#prim>::to_be_bytes(__bf_prim) }
                     }
                 }
 
                 impl ::core::convert::From<#ident> for #prim
                 where
-                    [(); #actual_bits]: ::modular_bitfield::private::#trait_check_ident,
+                    [(); #actual_bits]: ::modular_bitfield_msb::private::#trait_check_ident,
                 {
                     #[inline]
                     fn from(__bf_bitfield: #ident) -> Self {
-                        <Self>::from_le_bytes(__bf_bitfield.bytes)
+                        <Self>::from_be_bytes(__bf_bitfield.bytes)
                     }
                 }
             )
@@ -428,9 +427,10 @@ impl BitfieldStruct {
                     #[allow(clippy::identity_op)]
                     pub fn from_bytes(
                         bytes: [::core::primitive::u8; #next_divisible_by_8 / 8usize]
-                    ) -> ::core::result::Result<Self, ::modular_bitfield::error::OutOfBounds> {
-                        if bytes[(#next_divisible_by_8 / 8usize) - 1] >= (0x01 << (8 - (#next_divisible_by_8 - #size))) {
-                            return ::core::result::Result::Err(::modular_bitfield::error::OutOfBounds)
+                    ) -> ::core::result::Result<Self, ::modular_bitfield_msb::error::OutOfBounds> {
+                        let __bf_reject_mask = (0x01 << (#next_divisible_by_8 - #size)) - 1;
+                        if bytes[(#next_divisible_by_8 / 8usize) - 1] & __bf_reject_mask != 0 {
+                            return ::core::result::Result::Err(::modular_bitfield_msb::error::OutOfBounds)
                         }
                         ::core::result::Result::Ok(Self { bytes })
                     }
@@ -470,9 +470,9 @@ impl BitfieldStruct {
                 let expected_bits = bits.value;
                 let span = bits.span;
                 Some(quote_spanned!(span =>
-                    let _: ::modular_bitfield::private::checks::BitsCheck::<[(); #expected_bits]> =
-                        ::modular_bitfield::private::checks::BitsCheck::<[(); #expected_bits]>{
-                            arr: [(); <#ty as ::modular_bitfield::Specifier>::BITS]
+                    let _: ::modular_bitfield_msb::private::checks::BitsCheck::<[(); #expected_bits]> =
+                        ::modular_bitfield_msb::private::checks::BitsCheck::<[(); #expected_bits]>{
+                            arr: [(); <#ty as ::modular_bitfield_msb::Specifier>::BITS]
                         };
                 ))
             }
@@ -532,7 +532,7 @@ impl BitfieldStruct {
             #[doc = #getter_docs]
             #[inline]
             #( #retained_attrs )*
-            #vis fn #get_ident(&self) -> <#ty as ::modular_bitfield::Specifier>::InOut {
+            #vis fn #get_ident(&self) -> <#ty as ::modular_bitfield_msb::Specifier>::InOut {
                 self.#get_checked_ident().expect(#get_assert_msg)
             }
 
@@ -543,13 +543,15 @@ impl BitfieldStruct {
             #vis fn #get_checked_ident(
                 &self,
             ) -> ::core::result::Result<
-                <#ty as ::modular_bitfield::Specifier>::InOut,
-                ::modular_bitfield::error::InvalidBitPattern<<#ty as ::modular_bitfield::Specifier>::Bytes>
+                <#ty as ::modular_bitfield_msb::Specifier>::InOut,
+                ::modular_bitfield_msb::error::InvalidBitPattern<<#ty as ::modular_bitfield_msb::Specifier>::Bytes>
             > {
-                let __bf_read: <#ty as ::modular_bitfield::Specifier>::Bytes = {
-                    ::modular_bitfield::private::read_specifier::<#ty>(&self.bytes[..], #offset)
-                };
-                <#ty as ::modular_bitfield::Specifier>::from_bytes(__bf_read)
+                let __bf_base_bits: ::core::primitive::usize = 8usize * ::core::mem::size_of::<<#ty as ::modular_bitfield_msb::Specifier>::Bytes>();
+                let __bf_spec_bits: ::core::primitive::usize = <#ty as ::modular_bitfield_msb::Specifier>::BITS;
+                let __bf_read: <#ty as ::modular_bitfield_msb::Specifier>::Bytes = {
+                    ::modular_bitfield_msb::private::read_specifier::<#ty>(&self.bytes[..], #offset)
+                } << if <#ty as ::modular_bitfield_msb::Specifier>::STRUCT { __bf_base_bits - __bf_spec_bits } else { 0 };
+                <#ty as ::modular_bitfield_msb::Specifier>::from_bytes(__bf_read)
             }
         );
         Some(getters)
@@ -617,7 +619,7 @@ impl BitfieldStruct {
             #( #retained_attrs )*
             #vis fn #with_ident(
                 mut self,
-                new_val: <#ty as ::modular_bitfield::Specifier>::InOut
+                new_val: <#ty as ::modular_bitfield_msb::Specifier>::InOut
             ) -> Self {
                 self.#set_ident(new_val);
                 self
@@ -629,8 +631,8 @@ impl BitfieldStruct {
             #( #retained_attrs )*
             #vis fn #with_checked_ident(
                 mut self,
-                new_val: <#ty as ::modular_bitfield::Specifier>::InOut,
-            ) -> ::core::result::Result<Self, ::modular_bitfield::error::OutOfBounds> {
+                new_val: <#ty as ::modular_bitfield_msb::Specifier>::InOut,
+            ) -> ::core::result::Result<Self, ::modular_bitfield_msb::error::OutOfBounds> {
                 self.#set_checked_ident(new_val)?;
                 ::core::result::Result::Ok(self)
             }
@@ -639,7 +641,7 @@ impl BitfieldStruct {
             #[inline]
             #[allow(dead_code)]
             #( #retained_attrs )*
-            #vis fn #set_ident(&mut self, new_val: <#ty as ::modular_bitfield::Specifier>::InOut) {
+            #vis fn #set_ident(&mut self, new_val: <#ty as ::modular_bitfield_msb::Specifier>::InOut) {
                 self.#set_checked_ident(new_val).expect(#set_assert_msg)
             }
 
@@ -648,22 +650,22 @@ impl BitfieldStruct {
             #( #retained_attrs )*
             #vis fn #set_checked_ident(
                 &mut self,
-                new_val: <#ty as ::modular_bitfield::Specifier>::InOut
-            ) -> ::core::result::Result<(), ::modular_bitfield::error::OutOfBounds> {
-                let __bf_base_bits: ::core::primitive::usize = 8usize * ::core::mem::size_of::<<#ty as ::modular_bitfield::Specifier>::Bytes>();
-                let __bf_max_value: <#ty as ::modular_bitfield::Specifier>::Bytes = {
-                    !0 >> (__bf_base_bits - <#ty as ::modular_bitfield::Specifier>::BITS)
+                new_val: <#ty as ::modular_bitfield_msb::Specifier>::InOut
+            ) -> ::core::result::Result<(), ::modular_bitfield_msb::error::OutOfBounds> {
+                let __bf_base_bits: ::core::primitive::usize = 8usize * ::core::mem::size_of::<<#ty as ::modular_bitfield_msb::Specifier>::Bytes>();
+                let __bf_max_value: <#ty as ::modular_bitfield_msb::Specifier>::Bytes = {
+                    !0 >> (__bf_base_bits - <#ty as ::modular_bitfield_msb::Specifier>::BITS)
                 };
-                let __bf_spec_bits: ::core::primitive::usize = <#ty as ::modular_bitfield::Specifier>::BITS;
-                let __bf_raw_val: <#ty as ::modular_bitfield::Specifier>::Bytes = {
-                    <#ty as ::modular_bitfield::Specifier>::into_bytes(new_val)
-                }?;
+                let __bf_spec_bits: ::core::primitive::usize = <#ty as ::modular_bitfield_msb::Specifier>::BITS;
+                let __bf_raw_val: <#ty as ::modular_bitfield_msb::Specifier>::Bytes = {
+                    <#ty as ::modular_bitfield_msb::Specifier>::into_bytes(new_val)
+                }? >> if <#ty as ::modular_bitfield_msb::Specifier>::STRUCT { __bf_base_bits - __bf_spec_bits } else { 0 };
                 // We compare base bits with spec bits to drop this condition
                 // if there cannot be invalid inputs.
                 if !(__bf_base_bits == __bf_spec_bits || __bf_raw_val <= __bf_max_value) {
-                    return ::core::result::Result::Err(::modular_bitfield::error::OutOfBounds)
+                    return ::core::result::Result::Err(::modular_bitfield_msb::error::OutOfBounds)
                 }
-                ::modular_bitfield::private::write_specifier::<#ty>(&mut self.bytes[..], #offset, __bf_raw_val);
+                ::modular_bitfield_msb::private::write_specifier::<#ty>(&mut self.bytes[..], #offset, __bf_raw_val);
                 ::core::result::Result::Ok(())
             }
         );
@@ -686,7 +688,7 @@ impl BitfieldStruct {
             #getters
             #setters
         );
-        offset.push(syn::parse_quote! { <#ty as ::modular_bitfield::Specifier>::BITS });
+        offset.push(syn::parse_quote! { <#ty as ::modular_bitfield_msb::Specifier>::BITS });
         Some(getters_and_setters)
     }
 

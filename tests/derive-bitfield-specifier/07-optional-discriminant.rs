@@ -14,7 +14,7 @@
 // 0..2^BITS. We will do a compile-time check in a later test case to ensure
 // they are in range.
 
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 #[bitfield]
 pub struct RedirectionTableEntry {

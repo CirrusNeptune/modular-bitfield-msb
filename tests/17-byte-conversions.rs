@@ -1,6 +1,6 @@
 // These tests check the conversions from and to bytes.
 
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 // use std::convert::TryFrom;
 
 #[bitfield]
@@ -26,7 +26,7 @@ fn main() {
     assert_eq!(bitfield_1.d(), 1337);
 
     let bytes = bitfield_1.into_bytes().clone();
-    assert_eq!(bytes, [231, 13, 57, 5]);
+    assert_eq!(bytes, [225, 188, 5, 57]);
 
     let bitfield2 = MyFourBytes::from_bytes(bytes);
 

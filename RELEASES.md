@@ -54,7 +54,7 @@
 # 0.9.0 (2020-10-26)
 
 - Add `#[bitfield(specifier = bool)]` parameter with which it now is possible to have bitfield structs automatically also
-  implement the `modular_bitfield::Specifier` trait which makes it possible to have bitfields as fields of bitfields.
+  implement the `modular_bitfield_msb::Specifier` trait which makes it possible to have bitfields as fields of bitfields.
 - No longer generates an `unsafe fn from_bytes_unchecked`. Now generates a safe `fn from_bytes` that is basically identical.
   The difference is that we no longer consider bitfields containing invalid bit patterns as invalid since generated getters
   will protect their access anyways.
@@ -70,7 +70,7 @@
   a `Result`.
 - Silence repetitive `dead_code` warnings originating from generated `#[bitfield]` getters and setters.
 - Improve error span information in a few use cases.
-- Cleaned up backend code for `modular_bitfield` crate and its generated code.
+- Cleaned up backend code for `modular_bitfield_msb` crate and its generated code.
 
 # 0.7.0 (2020-10-18)
 

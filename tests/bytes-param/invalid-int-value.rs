@@ -1,4 +1,4 @@
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 // The integer value cannot be parsed into a `usize` since it is negative.
 #[bitfield(bytes = -1)]

@@ -1,4 +1,4 @@
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 // The bytes parameter is required to have an integer value.
 #[bitfield(bytes = true)]

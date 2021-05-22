@@ -1,4 +1,4 @@
-use modular_bitfield::prelude::*;
+use modular_bitfield_msb::prelude::*;
 
 #[bitfield]
 #[cfg_attr(not(feature = "unknown"), repr(u32))]
@@ -10,7 +10,7 @@ pub struct SignedInt {
 
 fn main() {
     let i1 = SignedInt::new().with_sign(true).with_value(0b1001_0011);
-    let i2 = SignedInt::from(0b0000_0000_0000_0000_0000_0001_0010_0111_u32);
+    let i2 = SignedInt::from(0b1000_0000_0000_0000_0000_0000_1001_0011_u32);
     assert_eq!(i1, i2);
     assert_eq!(i1.sign(), i2.sign());
     assert_eq!(i1.value(), i2.value());
